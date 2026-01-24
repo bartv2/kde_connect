@@ -5,8 +5,10 @@ services:
     user: "${UID:-1000}:${GID:-1000}"
     volumes:
       - ./config:/config
+      # - ./example-custom-config/custom_components:/config/custom_components
+      - ./kde_connect:/config/custom_components/kde_connect
       - /etc/localtime:/etc/localtime:ro
-     # - /run/dbus:/run/dbus:ro
+      # - /run/dbus:/run/dbus:ro
     ports:
      - "8123:8123"
     # restart: unless-stopped
