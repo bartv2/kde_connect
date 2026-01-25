@@ -9,6 +9,7 @@ services:
       - ./kde_connect:/config/custom_components/kde_connect
       - /etc/localtime:/etc/localtime:ro
       # - /run/dbus:/run/dbus:ro
+      - site-packages:/usr/local/lib/python3.13/site-packages/
     ports:
      - "8123:8123"
     # restart: unless-stopped
@@ -16,3 +17,5 @@ services:
     # network_mode: host
     environment:
       TZ: Europe/Amsterdam
+volumes:
+  site-packages:
