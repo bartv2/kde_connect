@@ -6,25 +6,24 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
-import logging
 
-from . import DOMAIN
-_LOGGER = logging.getLogger(__name__)
+from .const import DOMAIN
+from konnect import __version__ as konnect_version
 
 
-def setup_platform(
+async def async_setup_entry(
     hass: HomeAssistant,
-    config: ConfigType,
-    add_entities: AddEntitiesCallback,
-    discovery_info: DiscoveryInfoType | None = None
+    config_entry: HubConfigEntry,
+    async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up the binary_sensor platform."""
-    # We only want this platform to be set up via discovery.
-    if discovery_info is None:
-        return
-    konnect = discovery_info['konnect']
-    add_entities([ReachableSensor(konnect, device) for device in konnect.getDevices().values()])
+    """Add sensors for passed config_entry in HA."""
+    konnect = config_entry.konnect
 
+    new_devices = []
+    for device in konnect.getDevices().values():
+        new_devices.append(ReachableSensor(konnect, device))
+    if new_devices:
+        async_add_entities(new_devices)
 
 
 class ReachableSensor(BinarySensorEntity):
@@ -36,8 +35,8 @@ class ReachableSensor(BinarySensorEntity):
         """Initialize the sensor."""
         self._konnect = konnect
         self._device = device
-        self._name = device['name']
-        self._attr_unique_id = device['identifier']
+        self._name = "Reachable"
+        self._attr_unique_id = device['identifier'] + "_reachable"
         self._state = None
 
 
@@ -54,13 +53,13 @@ class ReachableSensor(BinarySensorEntity):
     @property
     def device_info(self) -> DeviceInfo:
         """Information about this entity/device."""
-        _LOGGER.warning('Devices', self._konnect)
+        #_LOGGER.warning('Devices', self._konnect)
         return {
-            "identifiers": {(DOMAIN, self._konnect.identifier)},
-            # "name": self._konnect.name,
-            # "sw_version": "1.0",
-            # "model": "K",
-            # "manufacturer": "KDE",
+            "identifiers": {(DOMAIN, self._device['identifier'])},
+            "name": self._device['name'],
+            "sw_version": konnect_version,
+            "model": self._device['type'],
+            "manufacturer": "Konnect",
         }
 
 

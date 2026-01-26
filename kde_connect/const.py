@@ -1,0 +1,1 @@
+DOMAIN = "kde_connect"
