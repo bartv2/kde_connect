@@ -54,4 +54,4 @@ def start(hass: HomeAssistant, args):
     reactor.listenTCP(int(args.admin_port), site, interface="127.0.0.1")
   else:
     reactor.listenUNIX(expanduser(expandvars(args.admin_port)), site)
-  return site
+  return konnect

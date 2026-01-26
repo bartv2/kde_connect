@@ -1,0 +1,3 @@
+[submodule "example-custom-config"]
+	path = example-custom-config
+	url = https://github.com/home-assistant/example-custom-config.git
