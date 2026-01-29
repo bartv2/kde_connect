@@ -19,7 +19,9 @@ async def async_setup_entry(
 
     new_devices = []
     for device in konnect.getDevices().values():
-        new_devices.append(TrustedSwitch(konnect, device))
+        identifier = device['identifier']
+        client = konnect.findClient(identifier)
+        new_devices.append(TrustedSwitch(konnect, client))
     if new_devices:
         async_add_entities(new_devices, update_before_add=True)
 
@@ -29,11 +31,11 @@ class TrustedSwitch(SwitchEntity):
     _attr_has_entity_name = True
     _attr_device_class = SwitchDeviceClass.SWITCH
     
-    def __init__(self, konnect, device) -> None:
+    def __init__(self, konnect, client) -> None:
         self._konnect = konnect
-        self._device = device
+        self._client = client
         self._name = "Trusted"
-        self._attr_unique_id = device['identifier'] + "_trusted"
+        self._attr_unique_id = client.identifier + "_trusted"
         self._state = None
 
 
@@ -46,7 +48,7 @@ class TrustedSwitch(SwitchEntity):
     def device_info(self) -> DeviceInfo:
         """Information about this entity/device."""
         return {
-            "identifiers": {(DOMAIN, self._device['identifier'])},
+            "identifiers": {(DOMAIN, self._client.identifier)},
         }
 
     @property
@@ -55,20 +57,12 @@ class TrustedSwitch(SwitchEntity):
         return self._state
 
     def turn_on(self, **kwargs: Any) -> None:
-        _LOGGER.warning('t on')
-        identifier = self._device['identifier']
-        client = self._konnect.findClient(identifier)
-        _LOGGER.warning('t on: %s %s', identifier, client)
-        client.sendPair()
+        self._client.sendPair()
 
     def turn_off(self, **kwargs: Any) -> None:
-        _LOGGER.warning('t off')
-        identifier = self._device['identifier']
-        self._konnect.database.unpairDevice(identifier)
-        client = self._konnect.findClient(identifier)
-        client.sendUnpair()
-
+        self._konnect.database.unpairDevice(self._client.identifier)
+        self._client.sendUnpair()
 
 
     def update(self) -> None:
-        self._state = self._device['trusted']
+        self._state = self._client.isTrusted()
