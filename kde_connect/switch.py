@@ -1,7 +1,6 @@
-"""Platform for binary_sensor integration."""
 from __future__ import annotations
 
-from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorDeviceClass
+from homeassistant.components.switch import SwitchEntity, SwitchDeviceClass
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -16,52 +15,60 @@ async def async_setup_entry(
     config_entry: HubConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Add sensors for passed config_entry in HA."""
     konnect = config_entry.konnect
 
     new_devices = []
     for device in konnect.getDevices().values():
-        new_devices.append(ReachableSensor(konnect, device))
+        new_devices.append(TrustedSwitch(konnect, device))
     if new_devices:
         async_add_entities(new_devices, update_before_add=True)
 
 
-class ReachableSensor(BinarySensorEntity):
+class TrustedSwitch(SwitchEntity):
 
     _attr_has_entity_name = True
-    _attr_device_class = BinarySensorDeviceClass.PRESENCE
+    _attr_device_class = SwitchDeviceClass.SWITCH
     
     def __init__(self, konnect, device) -> None:
-        """Initialize the sensor."""
         self._konnect = konnect
         self._device = device
-        self._name = "Reachable"
-        self._attr_unique_id = device['identifier'] + "_reachable"
+        self._name = "Trusted"
+        self._attr_unique_id = device['identifier'] + "_trusted"
         self._state = None
 
 
     @property
     def name(self) -> str:
-        """Return the display name of this sensor."""
+        """Return the display name of this switch."""
         return self._name
 
     @property
     def device_info(self) -> DeviceInfo:
         """Information about this entity/device."""
-        #_LOGGER.warning('Devices', self._konnect)
         return {
             "identifiers": {(DOMAIN, self._device['identifier'])},
-            "name": self._device['name'],
-            "sw_version": konnect_version,
-            "model": self._device['type'],
-            "manufacturer": "Konnect",
         }
 
     @property
     def is_on(self) -> bool | None:
-        """Return true if sensor is on."""
+        """Return true if switch is on."""
         return self._state
+
+    def turn_on(self, **kwargs: Any) -> None:
+        _LOGGER.warning('t on')
+        identifier = self._device['identifier']
+        client = self._konnect.findClient(identifier)
+        _LOGGER.warning('t on: %s %s', identifier, client)
+        client.sendPair()
+
+    def turn_off(self, **kwargs: Any) -> None:
+        _LOGGER.warning('t off')
+        identifier = self._device['identifier']
+        self._konnect.database.unpairDevice(identifier)
+        client = self._konnect.findClient(identifier)
+        client.sendUnpair()
+
 
 
     def update(self) -> None:
-        self._state = self._device['reachable']
+        self._state = self._device['trusted']
