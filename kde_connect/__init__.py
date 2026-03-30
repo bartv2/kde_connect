@@ -14,7 +14,7 @@ from .const import DOMAIN
 import logging
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS = [Platform.BINARY_SENSOR, Platform.SWITCH]
+PLATFORMS = [Platform.BINARY_SENSOR, Platform.SWITCH, Platform.NOTIFY]
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     try:
@@ -27,6 +27,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     from .server import start
     if not hasattr(entry, 'konnect'):
         entry.konnect = await hass.async_add_executor_job(start, hass, args)
+        entry.konnect.location_name = hass.config.location_name
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
