@@ -6,7 +6,7 @@ services:
     volumes:
       - ./config:/config
       # - ./example-custom-config/custom_components:/config/custom_components
-      - ./kde_connect:/config/custom_components/kde_connect
+      - ./custom_components/kde_connect:/config/custom_components/kde_connect
       - /etc/localtime:/etc/localtime:ro
       # - /run/dbus:/run/dbus:ro
       - site-packages:/usr/local/lib/python3.13/site-packages/
