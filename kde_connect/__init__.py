@@ -23,7 +23,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         pass
 
     from konnect.protocols import MAX_TCP_PORT
-    args = SimpleNamespace(name=entry.data["name"], debug=True, discovery_port=MAX_TCP_PORT, service_port=MAX_TCP_PORT, admin_port="8080", config_dir="/tmp/konnect", timestamps=True)
+    args = SimpleNamespace(name=entry.data["name"], debug=True, discovery_port=MAX_TCP_PORT, service_port=MAX_TCP_PORT, admin_port="8080", config_dir=hass.config.path('kde_connect'), timestamps=True)
+
     from .server import start
     if not hasattr(entry, 'konnect'):
         entry.konnect = await hass.async_add_executor_job(start, hass, args)
