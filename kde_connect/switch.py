@@ -7,7 +7,6 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import DOMAIN
 import logging
 _LOGGER = logging.getLogger(__name__)
-from konnect import __version__ as konnect_version
 
 
 async def async_setup_entry(
