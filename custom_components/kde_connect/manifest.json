@@ -3,7 +3,7 @@
   "name": "KDE Connect",
   "codeowners": ["@bartv2"],
   "dependencies": [],
-  "documentation": "https://github.com/bartv2/kde_connect/tree/master/",
+  "documentation": "https://github.com/bartv2/kde_connect/tree/main/",
   "integration_type": "hub",
   "iot_class": "local_polling",
   "single_config_entry": true,
