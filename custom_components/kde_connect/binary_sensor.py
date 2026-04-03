@@ -33,6 +33,8 @@ async def async_setup_entry(
             manufacturer="Konnect",
         )
         client = konnect.findClient(identifier)
+        if client is None:
+            continue
         new_devices.append(ReachableSensor(konnect, client))
     if new_devices:
         async_add_entities(new_devices, update_before_add=True)
@@ -72,4 +74,7 @@ class ReachableSensor(BinarySensorEntity):
 
     def update(self) -> None:
         devices = self._konnect.getDevices()
-        self._state = devices[self._client.identifier]['reachable']
+        try:
+            self._state = devices[self._client.identifier]['reachable']
+        except KeyError:
+            self._state = None

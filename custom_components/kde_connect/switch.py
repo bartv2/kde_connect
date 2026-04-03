@@ -20,6 +20,8 @@ async def async_setup_entry(
     for device in konnect.getDevices().values():
         identifier = device['identifier']
         client = konnect.findClient(identifier)
+        if client is None:
+            continue
         new_devices.append(TrustedSwitch(konnect, client))
     if new_devices:
         async_add_entities(new_devices, update_before_add=True)
