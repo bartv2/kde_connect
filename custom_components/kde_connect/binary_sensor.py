@@ -2,19 +2,21 @@
 from __future__ import annotations
 
 from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorDeviceClass
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from konnect import __version__ as konnect_version
 
 from .const import DOMAIN
 import logging
 _LOGGER = logging.getLogger(__name__)
-from konnect import __version__ as konnect_version
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    config_entry: HubConfigEntry,
+    config_entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Add sensors for passed config_entry in HA."""
@@ -44,7 +46,7 @@ class ReachableSensor(BinarySensorEntity):
 
     _attr_has_entity_name = True
     _attr_device_class = BinarySensorDeviceClass.PRESENCE
-    
+
     def __init__(self, konnect, client) -> None:
         """Initialize the sensor."""
         self._konnect = konnect
@@ -52,7 +54,6 @@ class ReachableSensor(BinarySensorEntity):
         self._name = "Reachable"
         self._attr_unique_id = client.identifier + "_reachable"
         self._state = None
-
 
     @property
     def name(self) -> str:
@@ -70,7 +71,6 @@ class ReachableSensor(BinarySensorEntity):
     def is_on(self) -> bool | None:
         """Return true if sensor is on."""
         return self._state
-
 
     def update(self) -> None:
         devices = self._konnect.getDevices()

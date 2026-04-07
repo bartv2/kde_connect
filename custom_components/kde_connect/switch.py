@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+from typing import Any
+
 from homeassistant.components.switch import SwitchEntity, SwitchDeviceClass
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
@@ -11,7 +15,7 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    config_entry: HubConfigEntry,
+    config_entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     konnect = config_entry.konnect
@@ -31,14 +35,13 @@ class TrustedSwitch(SwitchEntity):
 
     _attr_has_entity_name = True
     _attr_device_class = SwitchDeviceClass.SWITCH
-    
+
     def __init__(self, konnect, client) -> None:
         self._konnect = konnect
         self._client = client
         self._name = "Trusted"
         self._attr_unique_id = client.identifier + "_trusted"
         self._state = None
-
 
     @property
     def name(self) -> str:
@@ -63,7 +66,6 @@ class TrustedSwitch(SwitchEntity):
     def turn_off(self, **kwargs: Any) -> None:
         self._konnect.database.unpairDevice(self._client.identifier)
         self._client.sendUnpair()
-
 
     def update(self) -> None:
         self._state = self._client.isTrusted()

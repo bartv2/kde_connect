@@ -5,6 +5,7 @@ from .const import DOMAIN
 
 DATA_SCHEMA = vol.Schema({vol.Required("name", default="HomeAssistant"): str})
 
+
 class KDEConnectConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
     # MINOR_VERSION = 1
