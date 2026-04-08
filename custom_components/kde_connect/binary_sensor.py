@@ -8,6 +8,8 @@ from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from konnect import __version__ as konnect_version
+from konnect.factories import KonnectFactory
+from konnect.protocols import Konnect
 
 from .const import DOMAIN
 import logging
@@ -47,7 +49,7 @@ class ReachableSensor(BinarySensorEntity):
     _attr_has_entity_name = True
     _attr_device_class = BinarySensorDeviceClass.PRESENCE
 
-    def __init__(self, konnect, client) -> None:
+    def __init__(self, konnect: KonnectFactory, client: Konnect) -> None:
         """Initialize the sensor."""
         self._konnect = konnect
         self._client = client

@@ -14,9 +14,10 @@ from konnect.database import Database
 from konnect.factories import KonnectFactory
 from konnect.protocols import Discovery
 from homeassistant.core import HomeAssistant
+from types import SimpleNamespace
 
 
-def start(hass: HomeAssistant, args):
+def start(hass: HomeAssistant, args: SimpleNamespace) -> KonnectFactory:
     level = DEBUG if args.debug else INFO
 
     format_ = "%(levelname)s %(message)s"

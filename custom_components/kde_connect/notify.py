@@ -5,6 +5,8 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from konnect.factories import KonnectFactory
+from konnect.protocols import Konnect
 
 from .const import DOMAIN
 import logging
@@ -33,7 +35,7 @@ class DeviceNotify(NotifyEntity):
 
     _attr_has_entity_name = True
 
-    def __init__(self, konnect, client) -> None:
+    def __init__(self, konnect: KonnectFactory, client: Konnect) -> None:
         self._konnect = konnect
         self._client = client
         self._name = "Notifier"
